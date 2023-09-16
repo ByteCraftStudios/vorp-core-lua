@@ -143,7 +143,7 @@ RegisterNetEvent('vorp:initCharacter', function(coords, heading, isdead)
             Wait(1000)
             ShutdownLoadingScreen()
             Wait(7000)
-            CoreAction.Admin.HealPlayer()
+            HealPlayer()
         else
             if Config.Loadinscreen then
                 Citizen.InvokeNative(0x1E5B70E53DB661E5, 0, 0, 0, T.Holddead, T.Loaddead,
@@ -157,10 +157,29 @@ RegisterNetEvent('vorp:initCharacter', function(coords, heading, isdead)
         end
     else
         if Config.Loadinscreen then
+            DoScreenFadeOut(0)
             Citizen.InvokeNative(0x1E5B70E53DB661E5, 0, 0, 0, T.Hold, T.Load, T.Almost)
             Wait(Config.LoadinScreenTimer)
             Wait(1000)
             ShutdownLoadingScreen()
+
+            ------------------------------BCS------------------------------
+            keepDown = true
+            CreateThread(function() -- tread to keep player down
+                while keepDown do
+                    Wait(0)
+                    SetPedToRagdoll(PlayerPedId(), 4000, 4000, 0, false, false, false)
+                    ResetPedRagdollTimer(PlayerPedId())
+                    DisablePedPainAudio(PlayerPedId(), true)
+                end
+            end)
+
+            AnimpostfxPlay("Title_Gen_FewHoursLater")
+            Wait(3000)
+            DoScreenFadeIn(1000)
+            Wait(6000)
+            keepDown = false
+            ---------------------------------------------------------------
         end
 
         if not Config.HealthRecharge.enable then
@@ -182,12 +201,12 @@ RegisterNetEvent('vorp:initCharacter', function(coords, heading, isdead)
             Wait(10000)
             local player = PlayerPedId()
             Citizen.InvokeNative(0xC6258F41D86676E0, player, 0, HealthData.hInner)
-            SetEntityHealth(player, HealthData.hOuter + HealthData.hInner, 0)
+            SetEntityHealth(player, HealthData.hOuter + HealthData.hInner)
             Citizen.InvokeNative(0xC6258F41D86676E0, player, 1, HealthData.sInner)
             Citizen.InvokeNative(0x675680D089BFA21F, player, HealthData.sOuter / 1065353215 * 100)
             HealthData = {}
         else
-            CoreAction.Admin.HealPlayer()
+            HealPlayer()
         end
     end
 end)
