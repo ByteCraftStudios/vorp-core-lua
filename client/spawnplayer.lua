@@ -112,6 +112,24 @@ AddEventHandler('vorp:initCharacter', function(coords, heading, isdead)
             Wait(Config.LoadinScreenTimer)
             Wait(1000)
             ShutdownLoadingScreen()
+
+            ------------------------------BCS------------------------------
+            keepDown = true
+            CreateThread(function() -- tread to keep player down
+                while keepDown do
+                    Wait(0)
+                    SetPedToRagdoll(PlayerPedId(), 4000, 4000, 0, false, false, false)
+                    ResetPedRagdollTimer(PlayerPedId())
+                    DisablePedPainAudio(PlayerPedId(), true)
+                end
+            end)
+
+            AnimpostfxPlay("Title_Gen_FewHoursLater")
+            Wait(3000)
+            DoScreenFadeIn(1000)
+            Wait(6000)
+            keepDown = false
+            ---------------------------------------------------------------
         end
 
         if not Config.HealthRecharge.enable then
